@@ -1,13 +1,13 @@
 #include "config.h"
 #include <iostream>
 #include <cstdlib>
+#include <stdexcept>
 
 constexpr int REQUIRED_ARGC = 2;
 
 Config parseConfig(const int argc, char* argv[]) {
     if (argc < REQUIRED_ARGC) {
-        std::cerr << "Usage: " << argv[0] << " <bmp_file>" << std::endl;
-        std::exit(1);
+        throw std::runtime_error ("Usage: " + std::string(argv[0]) + " <bmp_file>");
     }
 
     Config myConfig;

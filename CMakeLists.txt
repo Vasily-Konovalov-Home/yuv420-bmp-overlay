@@ -8,7 +8,9 @@ add_executable(yuv420_bmp_overlay src/main.cpp
         src/config.cpp
         src/bmp_reader.h
         src/bmp_reader.cpp
-        )
+        src/yuv_rw.cpp
+        src/yuv_rw.h
+)
 
 if (WIN32)
     add_custom_command(TARGET yuv420_bmp_overlay POST_BUILD
@@ -25,4 +27,4 @@ if (WIN32)
             "C:/Program Files/JetBrains/CLion 2026.1.1/bin/mingw/bin/libwinpthread-1.dll"
             "$<TARGET_FILE_DIR:yuv420_bmp_overlay>"
     )
-endif()
+endif ()

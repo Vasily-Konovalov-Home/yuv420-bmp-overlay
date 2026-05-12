@@ -19,6 +19,6 @@ struct BmpImg {
  *  Возвращаем BmpImg
  */
 
-BmpImg readBMP(const std::string& bmpPath);
+BmpImg readBMP(const std::string &bmpPath);
 
 #endif //YUV420_BMP_OVERLAY_BMP_READER_H

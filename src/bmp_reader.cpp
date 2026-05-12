@@ -67,7 +67,7 @@ static void validateBMP(const BmpFileHeader &fileHeader,
     if (infoHeader.biClrUsed != BMP_PALETTED_NULL) {
         throw std::runtime_error("Unsupported BMP paletted");
     }
-    if (infoHeader.biHeight<=0 || infoHeader.biWidth <= 0) {
+    if (infoHeader.biHeight <= 0 || infoHeader.biWidth <= 0) {
         throw std::runtime_error("Invalid BMP height or width");
     }
 }
@@ -86,7 +86,7 @@ BmpImg readBMP(const std::string &bmpPath) {
 
     validateBMP(fileHeader, infoHeader);
 
-    int rowSizeRaw = infoHeader.biWidth * 3;    //  Red byte + Green byte + Blue byte = 3
+    int rowSizeRaw = infoHeader.biWidth * 3; //  Red byte + Green byte + Blue byte = 3
     int rowSizePadded = ((rowSizeRaw + 3) / 4) * 4;
     int padding = rowSizePadded - rowSizeRaw;
 
@@ -96,9 +96,9 @@ BmpImg readBMP(const std::string &bmpPath) {
     myBmp.rgbData.resize(static_cast<size_t>(myBmp.width * myBmp.height * 3));
 
     for (int row = 0; row < myBmp.height; row++) {
-        uint8_t* dst = myBmp.rgbData.data() + static_cast<size_t>(row * rowSizeRaw);
+        uint8_t *dst = myBmp.rgbData.data() + static_cast<size_t>(row * rowSizeRaw);
 
-        bmpFile.read(reinterpret_cast<char*>(dst), rowSizeRaw);
+        bmpFile.read(reinterpret_cast<char *>(dst), rowSizeRaw);
 
         if (padding > 0) {
             bmpFile.seekg(padding, std::ios::cur);

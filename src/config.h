@@ -12,6 +12,6 @@ struct Config {
  *  Принимаем колличество аргументов и сами аргументы,
  *  На выходе заполненная структура
  */
-Config parseConfig(int argc, char* argv[]);
+Config parseConfig(int argc, char *argv[]);
 
 #endif //YUV420_BMP_OVERLAY_CONFIG_H

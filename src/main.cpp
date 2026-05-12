@@ -1,39 +1,44 @@
 #include "config.h"
 #include "bmp_reader.h"
+#include "yuv_rw.h"
+
 #include <iostream>
 #include <stdexcept>
 #include <cstdlib>
 
-//  Тест readBMP
-int main(const int argc, char* argv[])
-{
+int main(const int argc, char *argv[]) {
     try {
+        // Парсим аргументы (пока только путь к BMP)
         Config cfg = parseConfig(argc, argv);
+
+        // Тест 1: читаем BMP
         BmpImg bmp = readBMP(cfg.bmpPath);
 
-        std::cout << "BMP loaded successfully:" << std::endl;
-        std::cout << "  Width:  " << bmp.width  << std::endl;
-        std::cout << "  Height: " << bmp.height << std::endl;
-        std::cout << "  RGB data size: " << bmp.rgbData.size() << " bytes" << std::endl;
+        std::cout << "BMP loaded: " << bmp.width << "*" << bmp.height
+                << std::endl << bmp.rgbData.size() << " bytes)" << std::endl;
 
-        if (!bmp.rgbData.empty()) {
-            const uint8_t* firstPixel = bmp.rgbData.data();
-            const uint8_t* lastPixel  = bmp.rgbData.data() + bmp.rgbData.size() - 3;
+        // Тест 2: открываем YUV и читаем первый кадр
+        // Для теста размеры для CYF 352*288
+        std::ifstream YUVFile("akiyo_cif.yuv", std::ios::binary);
+        if (!YUVFile.is_open()) {
+            std::cerr << "Info: YUV file not found" << std::endl;
+        } else {
+            YUVFrame frame;
+            const int TEST_WIDTH = 352;
+            const int TEST_HEIGHT = 288;
 
-            std::cout << "  First pixel (bottom-left, B G R): "
-                      << static_cast<int>(firstPixel[0]) << " "
-                      << static_cast<int>(firstPixel[1]) << " "
-                      << static_cast<int>(firstPixel[2]) << std::endl;
-
-            std::cout << "  Last pixel  (top-right, B G R):   "
-                      << static_cast<int>(lastPixel[0]) << " "
-                      << static_cast<int>(lastPixel[1]) << " "
-                      << static_cast<int>(lastPixel[2]) << std::endl;
+            if (readYUVFrame(YUVFile, frame, TEST_WIDTH, TEST_HEIGHT)) {
+                std::cout << "YUV frame read: " << frame.width << "*" << frame.height << std::endl;
+                std::cout << "  TEST_WIDTH * TEST_HEIGHT:  " << TEST_WIDTH * TEST_HEIGHT << std::endl;
+                std::cout << "  Y size:  " << frame.y.size() << " bytes" << std::endl;
+                std::cout << "  TEST_WIDTH/2 * TEST_HEIGHT/2:  " << TEST_WIDTH / 2 * TEST_HEIGHT / 2 << std::endl;
+                std::cout << "  U size:  " << frame.u.size() << " bytes" << std::endl;
+                std::cout << "  V size:  " << frame.v.size() << " bytes" << std::endl;
+            }
         }
 
         return 0;
-
-    } catch (const std::exception& e) {
+    } catch (const std::exception &e) {
         std::cerr << "Error: " << e.what() << std::endl;
         return 1;
     }

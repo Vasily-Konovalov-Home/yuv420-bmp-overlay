@@ -1,44 +1,73 @@
 #include "config.h"
 #include "bmp_reader.h"
+#include "rgb_to_yuv.h"
 #include "yuv_rw.h"
+#include "overlay.h"
 
 #include <iostream>
+#include <fstream>
 #include <stdexcept>
-#include <cstdlib>
+#include <string>
 
-int main(const int argc, char *argv[]) {
+int main(const int argc, char* argv[])
+{
     try {
-        // Парсим аргументы (пока только путь к BMP)
-        Config cfg = parseConfig(argc, argv);
+        // --- Аргументы ---
+        // Пока жёстко прописываем пути и размеры для теста.
+        // Потом заменим на parseConfig с нормальными аргументами.
 
-        // Тест 1: читаем BMP
-        BmpImg bmp = readBMP(cfg.bmpPath);
+        const std::string bmpPath      = "bmp_test.bmp";
+        const std::string inputYuvPath = "out.yuv";
+        const std::string outputYuvPath = "output.yuv";
+        const int videoWidth  = 1920;  // CIF
+        const int videoHeight = 1080;
 
-        std::cout << "BMP loaded: " << bmp.width << "*" << bmp.height
-                << std::endl << bmp.rgbData.size() << " bytes)" << std::endl;
+        // --- 1. Читаем BMP ---
+        std::cout << "Reading BMP: " << bmpPath << std::endl;
+        BmpImg bmp = readBMP(bmpPath);
+        std::cout << "  Size: " << bmp.width << "x" << bmp.height << std::endl;
 
-        // Тест 2: открываем YUV и читаем первый кадр
-        // Для теста размеры для CYF 352*288
-        std::ifstream YUVFile("akiyo_cif.yuv", std::ios::binary);
-        if (!YUVFile.is_open()) {
-            std::cerr << "Info: YUV file not found" << std::endl;
-        } else {
-            YUVFrame frame;
-            const int TEST_WIDTH = 352;
-            const int TEST_HEIGHT = 288;
+        // --- 2. Конвертируем BMP -> YUV420 (overlay) ---
+        std::cout << "Converting BMP to YUV420..." << std::endl;
+        YUVFrame overlay = convertRgbToYuv420(bmp);
 
-            if (readYUVFrame(YUVFile, frame, TEST_WIDTH, TEST_HEIGHT)) {
-                std::cout << "YUV frame read: " << frame.width << "*" << frame.height << std::endl;
-                std::cout << "  TEST_WIDTH * TEST_HEIGHT:  " << TEST_WIDTH * TEST_HEIGHT << std::endl;
-                std::cout << "  Y size:  " << frame.y.size() << " bytes" << std::endl;
-                std::cout << "  TEST_WIDTH/2 * TEST_HEIGHT/2:  " << TEST_WIDTH / 2 * TEST_HEIGHT / 2 << std::endl;
-                std::cout << "  U size:  " << frame.u.size() << " bytes" << std::endl;
-                std::cout << "  V size:  " << frame.v.size() << " bytes" << std::endl;
-            }
+        // Проверяем, что overlay помещается в видео
+        if (overlay.width > videoWidth || overlay.height > videoHeight) {
+            throw std::runtime_error("BMP is larger than video frame");
         }
 
+        // --- 3. Открываем входной и выходной YUV-файлы ---
+        std::ifstream inFile(inputYuvPath, std::ios::binary);
+        if (!inFile.is_open()) {
+            throw std::runtime_error("Cannot open input YUV: " + inputYuvPath);
+        }
+
+        std::ofstream outFile(outputYuvPath, std::ios::binary);
+        if (!outFile.is_open()) {
+            throw std::runtime_error("Cannot open output YUV: " + outputYuvPath);
+        }
+
+        // --- 4. Обрабатываем кадры ---
+        std::cout << "Processing frames..." << std::endl;
+        int frameCount = 0;
+        YUVFrame frame;
+
+        while (readYUVFrame(inFile, frame, videoWidth, videoHeight)) {
+            // Накладываем overlay на кадр
+            overlayYuvFrame(frame, overlay, 0, 0);
+
+            // Записываем результат
+            writeYUVFrame(outFile, frame);
+
+            ++frameCount;
+        }
+
+        std::cout << "Done. " << frameCount << " frames processed." << std::endl;
+        std::cout << "Output: " << outputYuvPath << std::endl;
+
         return 0;
-    } catch (const std::exception &e) {
+
+    } catch (const std::exception& e) {
         std::cerr << "Error: " << e.what() << std::endl;
         return 1;
     }

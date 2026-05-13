@@ -10,6 +10,10 @@ add_executable(yuv420_bmp_overlay src/main.cpp
         src/bmp_reader.cpp
         src/yuv_rw.cpp
         src/yuv_rw.h
+        src/overlay.cpp
+        src/overlay.h
+        src/rgb_to_yuv.cpp
+        src/rgb_to_yuv.h
 )
 
 if (WIN32)

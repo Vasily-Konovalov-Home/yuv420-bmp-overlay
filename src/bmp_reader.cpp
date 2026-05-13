@@ -3,7 +3,6 @@
 #include <string>
 #include <stdexcept>
 #include <iostream>
-#include <cstdlib>
 
 //  Структуры для заголовков bmp
 #pragma pack(push, 1)

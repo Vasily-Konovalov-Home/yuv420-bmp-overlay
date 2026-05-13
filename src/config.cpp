@@ -1,6 +1,5 @@
 #include "config.h"
 #include <iostream>
-#include <cstdlib>
 #include <stdexcept>
 
 constexpr int REQUIRED_ARGC = 2;

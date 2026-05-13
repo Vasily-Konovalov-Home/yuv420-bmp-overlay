@@ -20,15 +20,15 @@ if (WIN32)
     add_custom_command(TARGET yuv420_bmp_overlay POST_BUILD
             # Runtime MinGW
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "C:/Program Files/JetBrains/CLion 2026.1.1/bin/mingw/bin/libgcc_s_seh-1.dll"
+            "${CMAKE_SOURCE_DIR}/win32_runtime/libgcc_s_seh-1.dll"
             "$<TARGET_FILE_DIR:yuv420_bmp_overlay>"
 
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "C:/Program Files/JetBrains/CLion 2026.1.1/bin/mingw/bin/libstdc++-6.dll"
+            "${CMAKE_SOURCE_DIR}/win32_runtime/libstdc++-6.dll"
             "$<TARGET_FILE_DIR:yuv420_bmp_overlay>"
 
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "C:/Program Files/JetBrains/CLion 2026.1.1/bin/mingw/bin/libwinpthread-1.dll"
+            "${CMAKE_SOURCE_DIR}/win32_runtime/libwinpthread-1.dll"
             "$<TARGET_FILE_DIR:yuv420_bmp_overlay>"
     )
 endif ()

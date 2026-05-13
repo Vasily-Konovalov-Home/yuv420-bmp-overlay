@@ -29,11 +29,17 @@ constexpr YuvCoefficients BT601_COEFFS = {
  *
  *  BMP хранит строки снизу вверх. Результат разворачивается:
  *  YUVFrame.y[0] = верхняя строка
- *  По умолчанию коэффициенты BT.601
+ *  numThreads - колличество потоков
+ *      0 - std::thread::hardware_concurrency (автоматически находит возможное кол-во потоков)
+ *      1 - один поток
+ *      >1 - ногопоточный вариант
+ *  По умолчанию coeffs BT.601
  *  Во время тестов (пипеткой в paint) они показали себя хорошо
  *  с разбросом в +-1 RGB в масштабе (0-255)
+ *  Нечётные размеры BMP обрезаются до ближайшего чётного
  */
 YUVFrame convertRgbToYuv420(const BmpImg& bmp,
+                             int numThreads = 1,
                              const YuvCoefficients& coeffs = BT601_COEFFS);
 
 #endif //YUV420_BMP_OVERLAY_RGB_TO_YUV_H

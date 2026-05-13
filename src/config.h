@@ -11,6 +11,7 @@ struct Config {
     int videoHeight;
     int overlayOffsetX = 0;
     int overlayOffsetY = 0;
+    int numThreads = 0; //  0 = авто (hardware_concurrency)
 };
 
 /*

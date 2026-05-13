@@ -5,9 +5,16 @@
 
 struct Config {
     std::string bmpPath;
+    std::string inputYuvPath;
+    std::string outputYuvPath;
+    int videoWidth;
+    int videoHeight;
+    int overlayOffsetX = 0;
+    int overlayOffsetY = 0;
 };
 
 /*
+ *  parseConfig()
  *  Заполняем структуру Конфиг,
  *  Принимаем колличество аргументов и сами аргументы,
  *  На выходе заполненная структура
